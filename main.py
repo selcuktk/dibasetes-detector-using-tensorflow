@@ -1,6 +1,13 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
 
+# to avoid some warning
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 class Main:
     @staticmethod
@@ -12,44 +19,42 @@ class Main:
         # Separate features (X) and target (Y)
         X = data[:, :-1]  # All rows, all columns except the last (for features)
         Y = data[:, -1]   # All rows, last column (for target variable)
-        X = X.T
 
-        # Reshaping the target array (y)
-        Y = Y.reshape(1, Y.size)
+        # Convert to float32 to reduce computation cost
+        X = X.astype("float32")
+        Y = Y.astype("float32")
 
         print(X.shape)
-        print("--------------")
         print(Y.shape)
-        print("--------------")
+
+        # Compute mean and standard deviation of X before normalization
+        X_mean = np.mean(X, axis=0)
+        X_std = np.std(X, axis=0)
+
+        print(X_mean.shape)
+        print(X_std.shape)
+
+        # Normalize features using Min-Max Scaling
+        scaler = MinMaxScaler()
+        X = scaler.fit_transform(X)
 
         # First, split into training (70%) and temp (30%) which will be used for dev + test
-        x_train, x_temp, y_train, y_temp = train_test_split(X.T, Y.T, test_size=0.3, random_state=42)
+        x_train, x_temp, y_train, y_temp = train_test_split(X, Y, test_size=0.3, random_state=42)
 
         # Split the remaining 30% into dev (15%) and test (15%)
         x_dev, x_test, y_dev, y_test = train_test_split(x_temp, y_temp, test_size=0.5, random_state=42)
 
-        # Transpose back to match the required shape
-        x_train = x_train.T
-        x_dev = x_dev.T
-        x_test = x_test.T
-        y_train = y_train.T
-        y_dev = y_dev.T
-        y_test = y_test.T
-
         # Check the shapes
-        print("x_train shape:", x_train.shape)  # (8, train_samples)
-        print("x_dev shape:", x_dev.shape)      # (8, dev_samples)
-        print("x_test shape:", x_test.shape)    # (8, test_samples)
-        print("y_train shape:", y_train.shape)  # (1, train_samples)
-        print("y_dev shape:", y_dev.shape)      # (1, dev_samples)
-        print("y_test shape:", y_test.shape)    # (1, test_samples)
+        print("x_train shape:", x_train.shape)
+        print("x_dev shape:", x_dev.shape)
+        print("x_test shape:", x_test.shape)
+        print("y_train shape:", y_train.shape)
+        print("y_dev shape:", y_dev.shape)
+        print("y_test shape:", y_test.shape)
 
-
-
-        
-        
-            
-
+        # Print mean and standard deviation for later use
+        print("Mean of X:", X_mean)
+        print("Standard Deviation of X:", X_std)
 
 if __name__ == "__main__":
     Main.main()
