@@ -23,16 +23,11 @@ class Main:
         # Convert to float32 to reduce computation cost
         X = X.astype("float32")
         Y = Y.astype("float32")
-
-        print(X.shape)
-        print(Y.shape)
+        
 
         # Compute mean and standard deviation of X before normalization
         X_mean = np.mean(X, axis=0)
         X_std = np.std(X, axis=0)
-
-        print(X_mean.shape)
-        print(X_std.shape)
 
         # Normalize features using Min-Max Scaling
         scaler = MinMaxScaler()
@@ -55,6 +50,24 @@ class Main:
         # Print mean and standard deviation for later use
         print("Mean of X:", X_mean)
         print("Standard Deviation of X:", X_std)
+
+        # Sequential API (Very convenient, not very flexible)
+        starte_model = keras.Sequential(
+            [
+                layers.Dense(512, activation='relu'),
+                layers.Dense(256, activation='relu'),
+                layers.Dense(1, activation='sigmoid'),
+            ]
+        )
+
+        starte_model.compile(
+            loss='binary_crossentropy',
+            optimizer = keras.optimizers.Adam(learning_rate=0.001),
+            metrics=['accuracy'],
+        )
+        starte_model.fit(x_train, y_train, batch_size=x_train.shape[0], epochs=500, verbose=2)
+        starte_model.evaluate(x_dev, y_dev, verbose=2)
+        starte_model.evaluate(x_test, y_test, verbose=2)
 
 if __name__ == "__main__":
     Main.main()
