@@ -9,21 +9,23 @@ from tensorflow.keras import layers
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+
 class Main:
     @staticmethod
     def main():
 
         # Load the CSV data into a NumPy array
-        data = np.genfromtxt("health care diabetes.csv", delimiter=',', skip_header=1)
+        data = np.genfromtxt("health care diabetes.csv",
+                             delimiter=',', skip_header=1)
 
         # Separate features (X) and target (Y)
-        X = data[:, :-1]  # All rows, all columns except the last (for features)
+        # All rows, all columns except the last (for features)
+        X = data[:, :-1]
         Y = data[:, -1]   # All rows, last column (for target variable)
 
         # Convert to float32 to reduce computation cost
         X = X.astype("float32")
         Y = Y.astype("float32")
-        
 
         # Compute mean and standard deviation of X before normalization
         X_mean = np.mean(X, axis=0)
@@ -34,10 +36,12 @@ class Main:
         X = scaler.fit_transform(X)
 
         # First, split into training (70%) and temp (30%) which will be used for dev + test
-        x_train, x_temp, y_train, y_temp = train_test_split(X, Y, test_size=0.3, random_state=42)
+        x_train, x_temp, y_train, y_temp = train_test_split(
+            X, Y, test_size=0.3, random_state=42)
 
         # Split the remaining 30% into dev (15%) and test (15%)
-        x_dev, x_test, y_dev, y_test = train_test_split(x_temp, y_temp, test_size=0.5, random_state=42)
+        x_dev, x_test, y_dev, y_test = train_test_split(
+            x_temp, y_temp, test_size=0.5, random_state=42)
 
         # Check the shapes
         print("x_train shape:", x_train.shape)
@@ -52,7 +56,7 @@ class Main:
         print("Standard Deviation of X:", X_std)
 
         # Sequential API (Very convenient, not very flexible)
-        starte_model = keras.Sequential(
+        starter_model = keras.Sequential(
             [
                 layers.Dense(512, activation='relu'),
                 layers.Dense(256, activation='relu'),
@@ -60,14 +64,16 @@ class Main:
             ]
         )
 
-        starte_model.compile(
+        starter_model.compile(
             loss='binary_crossentropy',
-            optimizer = keras.optimizers.Adam(learning_rate=0.001),
+            optimizer=keras.optimizers.Adam(learning_rate=0.001),
             metrics=['accuracy'],
         )
-        starte_model.fit(x_train, y_train, batch_size=x_train.shape[0], epochs=500, verbose=2)
-        starte_model.evaluate(x_dev, y_dev, verbose=2)
-        starte_model.evaluate(x_test, y_test, verbose=2)
+        starter_model.fit(x_train, y_train,
+                          batch_size=x_train.shape[0], epochs=500, verbose=2)
+        starter_model.evaluate(x_dev, y_dev, verbose=2)
+        starter_model.evaluate(x_test, y_test, verbose=2)
+
 
 if __name__ == "__main__":
     Main.main()
